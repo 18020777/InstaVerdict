@@ -34,9 +34,9 @@ export default function App() {
         {polls ? (
             <>
               {polls.map(poll => <Poll poll={poll} key={poll.id}/>)}
-              <NewPollButton />
+              <NewPollButton refresh={onRefresh} />
             </>
-        ) : <Text>Loading</Text>}
+        ) : <Text style={{marginTop: 50}}>Loading</Text>}
       </View>
   );
 }

@@ -4,4 +4,5 @@ export class Colors {
 	static outline = '#868686';
 	static surface = '#f5f5f5';
 	static onSurface = '#1c1c1c';
+	static danger = '#e31f1f';
 }
