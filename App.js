@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import {Endpoints} from "./Utils/Endpoints";
 import {Colors} from "./Utils/Colors";
 import Poll from "./Components/Poll";
+import NewPollButton from "./Components/NewPollButton";
 
 export default function App() {
   const [polls, setPolls] = useState([])
@@ -30,7 +31,12 @@ export default function App() {
   return (
       <View style={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
         <StatusBar style="auto"/>
-        {polls ? polls.map(poll => <Poll poll={poll} key={poll.id}/>) : <Text>Loading</Text>}
+        {polls ? (
+            <>
+              {polls.map(poll => <Poll poll={poll} key={poll.id}/>)}
+              <NewPollButton />
+            </>
+        ) : <Text>Loading</Text>}
       </View>
   );
 }

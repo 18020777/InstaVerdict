@@ -8,7 +8,7 @@ const Poll = ({poll}) => {
 	const [vote, setVote] = useState()
 	const [isLoading, setIsLoading] = useState(false)
 
-	const checkVote = async () => setVote(await Storage.get("poll-" + poll.id))
+	const checkVote = async () => setVote(Number(await Storage.get("poll-" + poll.id)))
 
 	const addVote = async (index) => {
 		setIsLoading(true)
@@ -37,9 +37,9 @@ const Poll = ({poll}) => {
 	}, [])
 
 	return (
-		<View key={poll.id} style={styles.questionContainer}>
+		<View style={styles.questionContainer}>
 			<Text style={styles.question}>{poll.question}</Text>
-			{!isLoading && vote !== undefined && poll.options.map((option, i) => vote !== null ? (
+			{!isLoading && vote !== undefined && poll.options.map((option, i) => vote ? (
 				<View key={i} style={{...styles.vote, ...(i === vote ? styles.voted : styles.unvoted)}}>
 					<Text>{option}</Text>
 					<Text>{poll.votes[i]}</Text>
