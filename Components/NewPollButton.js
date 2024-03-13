@@ -1,4 +1,14 @@
-import {BackHandler, Button, Modal, Pressable, StyleSheet, Text, ToastAndroid, View} from "react-native";
+import {
+	ActivityIndicator,
+	BackHandler,
+	Button,
+	Modal,
+	Pressable,
+	StyleSheet,
+	Text,
+	ToastAndroid,
+	View
+} from "react-native";
 import {Colors} from "../Utils/Colors";
 import PlusIcon from "../Icons/PlusIcon";
 import {useEffect, useState} from "react";
@@ -8,39 +18,41 @@ import {Endpoints} from "../Utils/Endpoints";
 
 const NewPollButton = ({refresh}) => {
 	const [isOpen, setIsOpen] = useState(false)
+	const [isLoading, setIsLoading] = useState(false)
 	const [question, setQuestion] = useState("");
 	const [options, setOptions] = useState([])
 	const [error, setError] = useState("")
 
 	const submit = async () => {
+		setIsLoading(true)
 		setError("")
 		if (question.length < 3) {
 			setError("Your question is too short !")
-			return
-		}
-		if (options.length < 2) {
+		} else if (options.length < 2) {
 			setError("You need at least 2 options !")
-			return
-		}
-		for (const option of options) {
-			if (!option || option.length === 0) {
-				setError("An option cant be empty")
-				return
+		} else {
+			for (const option of options) {
+				if (!option || option.length === 0) {
+					setError("An option cant be empty")
+					setIsLoading(false)
+					return
+				}
+			}
+			const res = await fetch(Endpoints.newPoll, {
+				method: "POST",
+				body: JSON.stringify({
+					question: question,
+					options: options
+				}),
+				headers: {"Content-Type": "application/ld+json"}
+			})
+			if (res.ok) {
+				ToastAndroid.show("Your post have been created !", ToastAndroid.SHORT)
+				setIsOpen(false)
+				refresh()
 			}
 		}
-		const res = await fetch(Endpoints.newPoll, {
-			method: "POST",
-			body: JSON.stringify({
-				question: question,
-				options: options
-			}),
-			headers: {"Content-Type": "application/ld+json"}
-		})
-		if (res.ok) {
-			ToastAndroid.show("Your post have been created !", ToastAndroid.SHORT)
-			setIsOpen(false)
-			refresh()
-		}
+		setIsLoading(false)
 	}
 	const onBack = () => {
 		setQuestion("")
@@ -84,36 +96,42 @@ const NewPollButton = ({refresh}) => {
 				<View style={styles.modal}>
 					<Text style={{fontSize: 20}}>New Post</Text>
 					{error && <Text style={{color: Colors.danger}}>{error}</Text>}
-					<Input label="Question" value={question} onChange={x => {
-						setQuestion(x)
-						setError("")
-					}}/>
-					<View style={{width: "100%"}}>
-						<Text style={{fontSize: 15}}>Options</Text>
-						{options.map((option, i) => (
-							<View key={i} style={{
-								display: "flex",
-								flexDirection: "row",
-								justifyContent: "space-between",
-								marginBottom: 5
-							}}>
-								<Input width="85%" value={option} onChange={value => renameOption(i, value)}/>
-								<Pressable style={{paddingVertical: 5}} onPress={() => removeOption(i)}>
-									<MinusIcon style={{color: Colors.danger, width: 35, height: 35}}/>
+					{isLoading ? (
+						<ActivityIndicator size="large" style={{marginVertical: 25}} color={Colors.primary}/>
+					) : (
+						<>
+							<Input label="Question" value={question} onChange={x => {
+								setQuestion(x)
+								setError("")
+							}}/>
+							<View style={{width: "100%"}}>
+								<Text style={{fontSize: 15}}>Options</Text>
+								{options.map((option, i) => (
+									<View key={i} style={{
+										display: "flex",
+										flexDirection: "row",
+										justifyContent: "space-between",
+										marginBottom: 5
+									}}>
+										<Input width="85%" value={option} onChange={value => renameOption(i, value)}/>
+										<Pressable style={{paddingVertical: 5}} onPress={() => removeOption(i)}>
+											<MinusIcon style={{color: Colors.danger, width: 35, height: 35}}/>
+										</Pressable>
+									</View>
+								))}
+								<Pressable style={{display: "flex", flexDirection: "row", alignItems: "center", gap: 5}}
+								           onPress={addOption}>
+									<PlusIcon style={{color: Colors.primary, width: 15, height: 15}}/>
+									<Text style={{color: Colors.primary}}>
+										New Option
+									</Text>
 								</Pressable>
+								<View style={{marginTop: 20}}>
+									<Button title={"Create Post"} color={Colors.primary} onPress={submit}/>
+								</View>
 							</View>
-						))}
-						<Pressable style={{display: "flex", flexDirection: "row", alignItems: "center", gap: 5}}
-						           onPress={addOption}>
-							<PlusIcon style={{color: Colors.primary, width: 15, height: 15}}/>
-							<Text style={{color: Colors.primary}}>
-								New Option
-							</Text>
-						</Pressable>
-					</View>
-					<View style={{width: "100%", marginTop: 10}}>
-						<Button title={"Create Post"} color={Colors.primary} onPress={submit}/>
-					</View>
+						</>
+					)}
 				</View>
 			</Modal>
 		</>

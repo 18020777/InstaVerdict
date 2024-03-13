@@ -1,5 +1,5 @@
 import {StatusBar} from 'expo-status-bar';
-import {RefreshControl, StyleSheet, Text, View} from 'react-native';
+import {ActivityIndicator, RefreshControl, ScrollView, StyleSheet} from 'react-native';
 import {useEffect, useState} from "react";
 import {Endpoints} from "./Utils/Endpoints";
 import {Colors} from "./Utils/Colors";
@@ -7,7 +7,7 @@ import Poll from "./Components/Poll";
 import NewPollButton from "./Components/NewPollButton";
 
 export default function App() {
-  const [polls, setPolls] = useState([])
+  const [polls, setPolls] = useState()
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchPolls = async () => {
@@ -29,25 +29,28 @@ export default function App() {
   }, [])
 
   return (
-      <View style={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
-        <StatusBar style="auto"/>
-        {polls ? (
-            <>
-              {polls.map(poll => <Poll poll={poll} key={poll.id}/>)}
-              <NewPollButton refresh={onRefresh} />
-            </>
-        ) : <Text style={{marginTop: 50}}>Loading</Text>}
-      </View>
+      <>
+        <ScrollView style={styles.container} contentContainerStyle={styles.scrollView}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
+          <StatusBar style="auto"/>
+          {polls ?
+              polls.map(poll => <Poll poll={poll} key={poll.id}/>)
+              : <ActivityIndicator style={{marginTop: 25}} size="large" color={Colors.primary}/>}
+        </ScrollView>
+        {polls && !refreshing && <NewPollButton refresh={onRefresh}/>}
+      </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.surface,
-    color: Colors.onSurface,
-    flex: 1,
-    alignItems: 'center',
+    color: Colors.onSurface
+  },
+  scrollView: {
     gap: 25,
-    paddingVertical: 50,
+    alignItems: 'center',
+    paddingTop: 50,
+    paddingBottom: 100
   }
 });
