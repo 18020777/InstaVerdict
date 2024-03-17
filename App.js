@@ -14,7 +14,7 @@ export default function App() {
     const res = await fetch(Endpoints.listPolls)
     if (res.ok) {
       const json = await res.json()
-      setPolls(json["hydra:member"])
+      setPolls(json)
     }
   }
 
