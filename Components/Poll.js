@@ -18,12 +18,9 @@ const Poll = ({poll}) => {
         try {
             const votes = poll.votes
             votes[index] += 1
-            const res = await fetch(Endpoints.vote(poll.id), {
+            const res = await fetch(Endpoints.vote(poll.id, index), {
                 method: "PATCH",
-                body: JSON.stringify({votes: votes}),
-                headers: {
-                    "Content-Type": "application/merge-patch+json",
-                }
+                headers: {"Content-Type": "application/json"}
             })
             if (res.ok) {
                 setVote(index)

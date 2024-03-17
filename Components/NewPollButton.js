@@ -44,7 +44,7 @@ const NewPollButton = ({refresh}) => {
 					question: question,
 					options: options
 				}),
-				headers: {"Content-Type": "application/ld+json"}
+				headers: {"Content-Type": "application/json"}
 			})
 			if (res.ok) {
 				ToastAndroid.show("Your post have been created !", ToastAndroid.SHORT)
