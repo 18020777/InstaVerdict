@@ -47,9 +47,12 @@ const NewPollButton = ({refresh}) => {
 				headers: {"Content-Type": "application/json"}
 			})
 			if (res.ok) {
-				ToastAndroid.show("Your post have been created !", ToastAndroid.SHORT)
+				ToastAndroid.show("Your poll have been created !", ToastAndroid.SHORT)
 				setIsOpen(false)
 				refresh()
+			}
+			else {
+				ToastAndroid.show(res.statusText, ToastAndroid.SHORT)
 			}
 		}
 		setIsLoading(false)
@@ -94,7 +97,7 @@ const NewPollButton = ({refresh}) => {
 			<Modal animationType="fade" transparent={true} visible={isOpen}>
 				<Pressable style={styles.modalBackground} onPress={() => setIsOpen(false)}/>
 				<View style={styles.modal}>
-					<Text style={{fontSize: 20}}>New Post</Text>
+					<Text style={{fontSize: 20}}>New Poll</Text>
 					{error && <Text style={{color: Colors.danger}}>{error}</Text>}
 					{isLoading ? (
 						<ActivityIndicator size="large" style={{marginVertical: 25}} color={Colors.primary}/>
@@ -127,7 +130,7 @@ const NewPollButton = ({refresh}) => {
 									</Text>
 								</Pressable>
 								<View style={{marginTop: 20}}>
-									<Button title={"Create Post"} color={Colors.primary} onPress={submit}/>
+									<Button title={"Create Poll"} color={Colors.primary} onPress={submit}/>
 								</View>
 							</View>
 						</>
