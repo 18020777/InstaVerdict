@@ -17,21 +17,27 @@ import MinusIcon from "../Icons/MinusIcon";
 import {Endpoints} from "../Utils/Endpoints";
 
 const NewPollButton = ({refresh}) => {
+	// state to manage the modal visibility
 	const [isOpen, setIsOpen] = useState(false)
+	// state to manage the loading state
 	const [isLoading, setIsLoading] = useState(false)
 	const [question, setQuestion] = useState("");
 	const [options, setOptions] = useState([])
 	const [error, setError] = useState("")
 
+	// function to submit the poll with some validity checks
 	const submit = async () => {
+		// we set the loading state to true and reset the error
 		setIsLoading(true)
 		setError("")
 		if (question.length < 3) {
+			// we check if the question is not too short
 			setError("Your question is too short !")
 		} else if (options.length < 2) {
 			setError("You need at least 2 options !")
 		} else {
 			for (const option of options) {
+				// we check if the options are not empty
 				if (!option || option.length === 0) {
 					setError("An option cant be empty")
 					setIsLoading(false)
@@ -39,6 +45,7 @@ const NewPollButton = ({refresh}) => {
 				}
 			}
 			const res = await fetch(Endpoints.newPoll, {
+				// if the poll is valid, we send a POST request to the server
 				method: "POST",
 				body: JSON.stringify({
 					question: question,
@@ -47,11 +54,13 @@ const NewPollButton = ({refresh}) => {
 				headers: {"Content-Type": "application/json"}
 			})
 			if (res.ok) {
+				// if the poll is created, we close the modal, show a toast and refresh the polls
 				ToastAndroid.show("Your poll have been created !", ToastAndroid.SHORT)
 				setIsOpen(false)
 				refresh()
 			}
 			else {
+				// if the poll is not created, we show a toast with the error message
 				ToastAndroid.show(res.statusText, ToastAndroid.SHORT)
 			}
 		}
@@ -65,6 +74,7 @@ const NewPollButton = ({refresh}) => {
 	};
 
 	useEffect(() => {
+		// add a back button listener to close the modal
 		const backHandler = BackHandler.addEventListener('hardwareBackPress', onBack);
 		return () => backHandler.remove();
 	}, []);
@@ -79,6 +89,7 @@ const NewPollButton = ({refresh}) => {
 	const removeOption = (i) => {
 		setError("")
 		const updatedOptions = [...options];
+		// we remove the option at the index i
 		updatedOptions.splice(i, 1);
 		setOptions(updatedOptions);
 	}

@@ -2,6 +2,7 @@ import React from 'react'
 import {StyleSheet, Text, TextInput, View} from "react-native";
 import {Colors} from "../Utils/Colors";
 
+// A simple input component with a label and a placeholder
 const Input = ({label, value, onChange, width = "100%"}) => {
 	return (
 		<View style={{width: width}}>
